@@ -1,0 +1,31 @@
+<template name="afObjectField_autoflow">
+    <section id="{{atts.id}}-section" class="well">
+        <fieldset>
+
+            <legend>
+              {{_ this.name}}
+                <a href="#{{formattedName}}-params-group" class="expander-collapser" style="display: none"><b class="caret"></b></a>
+                <a href="#{{formattedName}}-params-group" class="expander-collapser"><b class="caret"></b></a>
+            </legend>
+
+            <div id="{{formattedName}}-params-group">
+              {{> afQuickFields quickFieldsAtts}}
+              {{#if qfShouldRenderButton}}
+                  <div class="form-group">
+                      <div class="{{labelClass}}"></div>
+                      <div class="{{inputClass}}">
+                          <button type="submit" {{submitButtonAtts}}>
+                            {{#with ../atts.buttonContent}}
+                              {{this}}
+                            {{else}}
+                                Submit
+                            {{/with}}
+                          </button>
+                      </div>
+                  </div>
+              {{/if}}
+            </div>
+
+        </fieldset>
+    </section>
+</template>
