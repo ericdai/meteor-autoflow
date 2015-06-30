@@ -16,8 +16,9 @@ Package.onUse(function (api) {
     api.use('reactive-var', ['client', 'server']);
     api.use('underscore', 'client');
     //api.use(['livedata', 'underscore', 'deps', 'templating', 'ui', 'blaze', 'ejson', 'reactive-var', 'reactive-dict', 'random'], 'client');
-    api.use('aldeed:simple-schema@1.3.3');
     api.use('aldeed:autoform@5.1.2');
+    api.use('aldeed:simple-schema@1.3.3');
+    api.use('fullflavedave:json-schema@0.0.1');
     api.addFiles('autoflow.js', ['client', 'server']);
     api.addFiles('quick-flow.html', ['client']);
     api.addFiles('quick-flow.js', ['client']);

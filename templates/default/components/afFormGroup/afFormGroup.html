@@ -1,4 +1,13 @@
 <template name="afFormGroup_autoflow">
+    {{#if mapsTo}}
+        <input type="hidden" name={{mapsToName}} value={{mapsTo}} />
+        <div class="form-group" data-required="true">
+            <label class="control-label label-col" for="mSMHK8xW5tto7Lsz3">{{mapsToName}}</label>
+            <div class="input-col">
+                <input type="text" name={{mapsToName}} id="mSMHK8xW5tto7Lsz3" required="" data-schema-key={{mapsToName}} class="form-control" value={{mapsTo}}>
+            </div>
+        </div>
+    {{/if}}
     <div class="form-group {{#if afFieldIsInvalid name=this.name}}has-error{{/if}}" data-required={{required}} {{hiddenAttr}}>
         {{#if skipLabel}}
         {{! We include the empty label as the easiest way to keep proper field alignment}}

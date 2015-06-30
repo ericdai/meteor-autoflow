@@ -1,29 +1,7 @@
 AutoFlow = {
-    // Reactive Dictionary pattern from https://www.eventedmind.com/feed/meteor-build-a-reactive-data-source
-    Schemas: {
-        keys: {},
-        deps: {},
-        get: function (key) {
-            this.ensureDeps(key);
-            this.deps[key].depend();
-            return this.keys[key];
-        },
-        set: function (key, value) {
-            this.ensureDeps(key);
-            this.keys[key] = value;
-            this.deps[key].changed();
-        },
-        ensureDeps: function (key) {
-            if (!this.deps[key])
-                this.deps[key] = new Tracker.Dependency;
-        },
-        clear: function () {
-            _.each(this.keys, function (val, key) {
-                delete key;
-            });
-        }
-    },
-    currentSchemaName: new ReactiveVar()
+    currentFormName: new ReactiveVar(),
+    DEFAULT_UPSERT_METHOD: 'autoFlowUpsert',
+    DEFAULT_AUTOFORM_TEMPLATE: 'autoFlow'
 };
 
 SimpleSchema.extendOptions({
@@ -53,7 +31,7 @@ if (Meteor.isServer) {
     };
 
     Meteor.methods({
-        autoflowUpsert: function(settings) {
+        autoFlowUpsert: function(settings) {
             var collectionName,
                 collectionId,
                 collection,
@@ -62,7 +40,7 @@ if (Meteor.isServer) {
 
             if (!Meteor.user()) throw new Meteor.Error('not-logged-in', 'You must be logged in to call this method');
 
-            console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
+            //console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
             validateSettings(settings);
 
             collectionName = settings.$set.collectionName;
@@ -73,8 +51,8 @@ if (Meteor.isServer) {
             document = document || {};
             //console.log('collection = ' + JSON.stringify(collection, null, 4));
 
-            lodash.forEach(settings.$set, function(value, key) {
-                if (!ld.includes(['collectionName', 'collectionId'], key) && key.indexOf(':') === -1) {
+            _.each(settings.$set, function(value, key) {
+                if (key !== 'collectionName' && key !== 'collectionId' && key.indexOf(':') === -1) {
                     var mapping = settings.$set[key.replace('.', ':') + ':mapTo'];
                     if (mapping) {
                         ld.set(filteredCollection, mapping, value);
@@ -84,19 +62,30 @@ if (Meteor.isServer) {
                 }
             });
 
-            console.log('Stringified, filteredCollection = ' + JSON.stringify(filteredCollection, null, 4));
+            //lodash.forEach(settings.$set, function(value, key) {
+            //    if (!lodash.includes(['collectionName', 'collectionId'], key) && key.indexOf(':') === -1) {
+            //        var mapping = settings.$set[key.replace('.', ':') + ':mapTo'];
+            //        if (mapping) {
+            //            ld.set(filteredCollection, mapping, value);
+            //        } else {
+            //            filteredCollection[key] = value;
+            //        }
+            //    }
+            //});
+
+            //console.log('Stringified, filteredCollection = ' + JSON.stringify(filteredCollection, null, 4));
 
             var document = ld.merge(document, filteredCollection);
 
-            //collection.upsert(collectionId, document, { multi: false }, function (error, result) {
-            //    if (error) {
-            //        console.log("There was an error upserting collection " + collectionName + ' with collectionId of ' + collectionId);
-            //        console.log('error: ' + error);
-            //    } else {
-            //        successResult = result;
-            //        console.log('Successfully updated collection ' + collectionName + ' with collectionId of ' + collectionId + ' for this many records: ' + successResult);
-            //    }
-            //});
+            collection.upsert(collectionId, document, { multi: false }, function (error, result) {
+                if (error) {
+                    console.log("There was an error upserting collection " + collectionName + ' with collectionId of ' + collectionId);
+                    console.log('error: ' + error);
+                } else {
+                    successResult = result;
+                    console.log('Successfully updated collection ' + collectionName + ' with collectionId of ' + collectionId + ' for this many records: ' + successResult);
+                }
+            });
 
         }
     });

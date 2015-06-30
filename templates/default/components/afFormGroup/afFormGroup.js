@@ -61,7 +61,7 @@ var getFormulaVal = function getFormulaVal(formula, formSchema) {
     return val;
 };
 
-Template["afFormGroup_autoflow"].helpers({
+Template['afFormGroup_autoflow'].helpers({
     afFieldInputAtts: function () {
         var atts = _.clone(this.afFieldInputAtts || {}),
             fieldSchema = null,
@@ -130,6 +130,14 @@ Template["afFormGroup_autoflow"].helpers({
         if (fieldSchema.autoflow && fieldSchema.autoflow.hidden) {
             return "hidden"
         }
+    },
+    // Added by DA
+    mapsTo: function() {
+        var fieldSchema = AutoForm.getSchemaForField(this.name);
+        return fieldSchema.autoflow && fieldSchema.autoflow.mapsTo;
+    },
+    mapsToName: function() {
+        return this.name + '.mapsTo';
     }
 });
 

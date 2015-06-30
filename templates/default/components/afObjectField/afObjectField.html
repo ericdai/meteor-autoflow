@@ -1,5 +1,5 @@
 <template name="afObjectField_autoflow">
-    <section id="{{atts.id}}-section" class="well">
+    <section id="{{formattedName}}-section" class="well">
         <fieldset>
 
             <legend>
@@ -8,7 +8,7 @@
                 <a href="#{{formattedName}}-params-group" class="expander-collapser"><b class="caret"></b></a>
             </legend>
 
-            <div id="{{formattedName}}-params-group">
+            <div id="{{formattedName}}-params-group" {{hiddenAttr}}>
               {{> afQuickFields quickFieldsAtts}}
               {{#if qfShouldRenderButton}}
                   <div class="form-group">

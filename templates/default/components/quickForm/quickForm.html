@@ -1,11 +1,12 @@
 <template name="quickForm_autoflow">
     {{#autoForm qfAutoFormContext}}
+        {{autoCloseGroups}}
         {{> afQuickFields quickFieldsAtts}}
         {{#if qfShouldRenderButton}}
             <div class="form-group">
                 <div class="{{labelClass}}"></div>
                 <div class="{{inputClass}}">
-                    <button type="submit" {{submitButtonAtts}}>
+                    <button type="submit" {{submitButtonAtts}} id="autoflow-submit">
                         {{#with ../atts.buttonContent}}
                             {{this}}
                         {{else}}
