@@ -1,7 +1,7 @@
 AutoFlow = {
     currentFormName: new ReactiveVar(),
     DEFAULT_UPSERT_METHOD: 'autoFlowUpsert',
-    DEFAULT_AUTOFORM_TEMPLATE: 'autoFlow'
+    DEFAULT_AUTOFORM_TEMPLATE: 'autoflow'
 };
 
 SimpleSchema.extendOptions({
@@ -32,6 +32,7 @@ if (Meteor.isServer) {
 
     Meteor.methods({
         autoFlowUpsert: function(settings) {
+            console.log('Starting autoFlowUpsert = ');
             var collectionName,
                 collectionId,
                 collection,
@@ -40,7 +41,7 @@ if (Meteor.isServer) {
 
             if (!Meteor.user()) throw new Meteor.Error('not-logged-in', 'You must be logged in to call this method');
 
-            //console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
+            console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
             validateSettings(settings);
 
             collectionName = settings.$set.collectionName;
@@ -51,31 +52,20 @@ if (Meteor.isServer) {
             document = document || {};
             //console.log('collection = ' + JSON.stringify(collection, null, 4));
 
-            _.each(settings.$set, function(value, key) {
-                if (key !== 'collectionName' && key !== 'collectionId' && key.indexOf(':') === -1) {
+            lodash.forEach(settings.$set, function(value, key) {
+                if (!lodash.includes(['collectionName','collectionId'], key) && key.indexOf(':') === -1) {
                     var mapping = settings.$set[key.replace('.', ':') + ':mapTo'];
                     if (mapping) {
-                        ld.set(filteredCollection, mapping, value);
+                        lodash.set(filteredCollection, mapping, value);
                     } else {
                         filteredCollection[key] = value;
                     }
                 }
             });
 
-            //lodash.forEach(settings.$set, function(value, key) {
-            //    if (!lodash.includes(['collectionName', 'collectionId'], key) && key.indexOf(':') === -1) {
-            //        var mapping = settings.$set[key.replace('.', ':') + ':mapTo'];
-            //        if (mapping) {
-            //            ld.set(filteredCollection, mapping, value);
-            //        } else {
-            //            filteredCollection[key] = value;
-            //        }
-            //    }
-            //});
-
             //console.log('Stringified, filteredCollection = ' + JSON.stringify(filteredCollection, null, 4));
 
-            var document = ld.merge(document, filteredCollection);
+            var document = lodash.merge(document, filteredCollection);
 
             collection.upsert(collectionId, document, { multi: false }, function (error, result) {
                 if (error) {
@@ -86,7 +76,6 @@ if (Meteor.isServer) {
                     console.log('Successfully updated collection ' + collectionName + ' with collectionId of ' + collectionId + ' for this many records: ' + successResult);
                 }
             });
-
         }
     });
 }

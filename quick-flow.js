@@ -31,7 +31,7 @@ var getCurrentFormSimpleSchema = function getCurrentFormSimpleSchema(currentForm
     }
 };
 
-var mapCurrentContextToQuickFormContext = function mapCurrentContextToQuickFormContext(currentFormDef) {
+var mapCurrentContextAndSchemaFieldsToQuickFormContext = function mapCurrentContextAndSchemaFieldsToQuickFormContext(currentFormDef) {
     var templateDataContext = {},
         resetOnSuccess = currentDataContext['reset-on-success'] || currentDataContext.resetOnSuccess,
         buttonContent = currentDataContext['button-content'] || currentDataContext.buttonContent,
@@ -44,7 +44,8 @@ var mapCurrentContextToQuickFormContext = function mapCurrentContextToQuickFormC
     if (currentDataContext.type) templateDataContext.type = currentDataContext.type;
     templateDataContext.meteormethod = currentDataContext['meteor-method'] || currentDataContext.meteormethod || currentDataContext.meteorMethod || AutoFlow.DEFAULT_UPSERT_METHOD;
     templateDataContext.template = currentDataContext.template || AutoFlow.DEFAULT_AUTOFORM_TEMPLATE;
-    if (resetOnSuccess) templateDataContext.resetOnSuccess = resetOnSuccess;
+    if (typeof currentDataContext.validation !== undefined) templateDataContext['validation'] = currentDataContext.validation;
+    if (typeof resetOnSuccess !== 'undefined') templateDataContext.resetOnSuccess = resetOnSuccess;
     if (buttonContent) templateDataContext.buttonContent = buttonContent;
     if (labelClass) templateDataContext['label-class'] = labelClass;
     if (inputColClass) templateDataContext['input-col-class'] = inputColClass;
@@ -92,13 +93,16 @@ Template.quickFlow.rendered = function renderQuickFormTemplateWithDataContext() 
         quickFormDataContext = null,
         parentNode = document.getElementById('quickFlow');
 
-    currentDataContext = Template.currentData();
+    currentDataContext = this.data; // this is template instance; could also use Template.currentData()
 
     this.autorun(function() {
         currentFormName = AutoFlow.currentFormName.get();  // reactive, triggers autorun
         autoFlowDef = getAutoFlowDef();
         currentFormDef = getCurrentFormDef(autoFlowDef, currentFormName);
-        quickFormDataContext = mapCurrentContextToQuickFormContext(currentFormDef);
+        quickFormDataContext = mapCurrentContextAndSchemaFieldsToQuickFormContext(currentFormDef);
+        //console.log('quickFormDataContext.type = ' + quickFormDataContext.type);
+        //console.log('quickFormDataContext.meteormethod = ' + quickFormDataContext.meteormethod);
+        //console.log('Stringified, quickformDataContext = ' + JSON.stringify(quickFormDataContext, null, 4));
 
         if (renderedView) Blaze.remove(renderedView);
         renderedView = Blaze.renderWithData(Template.quickForm, quickFormDataContext, parentNode);
