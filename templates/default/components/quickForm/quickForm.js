@@ -54,14 +54,8 @@ Template['quickForm_autoflow'].helpers({
             atts['class'] = 'btn btn-primary';
         }
 
-        var nextForm = qfAtts.schema._schema.nextForm;
-        if (nextForm) {
-            atts['next-form'] = nextForm.value || nextForm.defaultValue;
-        }
-
-        var nextRoute = qfAtts.schema._schema.nextRoute;
-        if (nextRoute) {
-            atts['next-route'] = nextRoute.value || nextRoute.defaultValue;
+        if (typeof qfAtts.validation === "string") {
+            atts['validation'] = qfAtts.validation;
         }
 
         return atts;
@@ -94,12 +88,25 @@ Template['quickForm_autoflow'].helpers({
 Template['quickForm_autoflow'].events({
     'submit form': function(event, template) {
         event.preventDefault();
-        var $autoFlowSubmit = template.find('#autoflow-submit');
 
-        var nextForm = $autoFlowSubmit.getAttribute('next-form');
+        var formId = $(event.target).closest('form').attr('id');
+        var formSchema = AutoForm.getFormSchema(formId);
+
+        var $autoFlowSubmit = template.find('#autoflow-submit');
+        var typeOfValidation = $autoFlowSubmit.getAttribute('validation');
+
+        if (typeOfValidation !== 'none' && typeOfValidation !== false) {
+            var isValid = AutoForm.validateForm(formId);
+            if (!isValid) {
+                console.log('Form with id="' + formId + '" failed AutoForm validation');
+                return;
+            }
+        }
+
+        var nextForm = formSchema._schema.nextForm && formSchema._schema.nextForm.defaultValue || formSchema._schema.nextForm.value;
         if (nextForm) AutoFlow.currentFormName.set(nextForm);
 
-        var nextRoute = $autoFlowSubmit.getAttribute('next-route');
+        var nextRoute = formSchema._schema.nextRoute && formSchema._schema.nextRoute.defaultValue || formSchema._schema.nextRoute.value;
         if (nextRoute) Router.go(nextRoute);
     }
 });
