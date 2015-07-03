@@ -1,3 +1,4 @@
+/** Begin section added by DA **/
 // From https://www.eventedmind.com/feed/meteor-build-a-reactive-data-source
 var reactiveFieldDict = {
     keys: {},
@@ -60,8 +61,9 @@ var getFormulaVal = function getFormulaVal(formula, formSchema) {
 
     return val;
 };
+/** End section added by DA **/
 
-Template['afFormGroup_autoflow'].helpers({
+Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
     afFieldInputAtts: function () {
         var atts = _.clone(this.afFieldInputAtts || {});
 
@@ -71,7 +73,7 @@ Template['afFormGroup_autoflow'].helpers({
         // We have a special template for check boxes, but otherwise we
         // want to use the same as those defined for bootstrap3 template.
         if (AutoForm.getInputType(this.afFieldInputAtts) === "boolean-checkbox") {
-            atts.template = "bootstrap3-horizontal";
+            atts.template = "autoflow_bootstrap3_horizontal";
         } else {
             atts.template = "bootstrap3";
         }
@@ -140,12 +142,12 @@ Template['afFormGroup_autoflow'].helpers({
 });
 
 // DA: Clear leftover values
-Template["afFormGroup_autoflow"].rendered = function () {
+Template["afFormGroup_autoflow_bootstrap3_horizontal"].rendered = function () {
     reactiveFieldDict.clear();
 };
 
 // DA: added so that any dependent fields can react appropriately
-Template["afFormGroup_autoflow"].events({
+Template["afFormGroup_autoflow_bootstrap3_horizontal"].events({
     'change *': function (event, tmpl) {
         //console.log('Something was changed, this = ' + JSON.stringify(this, null, 4));
         //var name = $(event.target).attr('name');

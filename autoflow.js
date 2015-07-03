@@ -1,5 +1,6 @@
 AutoFlow = {
-    currentFormName: new ReactiveVar(),
+    currentFormName: new ReactiveVar(null),
+    flowDef: new ReactiveVar(null),
     DEFAULT_UPSERT_METHOD: 'autoFlowUpsert',
     DEFAULT_AUTOFORM_TEMPLATE: 'autoflow'
 };
@@ -7,6 +8,7 @@ AutoFlow = {
 SimpleSchema.extendOptions({
     autoflow: Match.Optional(Match.ObjectIncluding({
         readOnly: Match.Optional(Boolean),
+        displayOnly: Match.Optional(Boolean),
         units: Match.Optional(String),
         selectionDep: Match.Optional(String),
         selectionProp: Match.Optional(String),

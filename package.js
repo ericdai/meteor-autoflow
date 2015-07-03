@@ -1,6 +1,6 @@
 Package.describe({
     name: 'fullflavedave:autoflow',
-    version: '0.0.1',
+    version: '0.0.2',
     summary: 'Extends simple schema and autoform to produce multiple form page flows from json',
     git: '',
     // By default, Meteor will default to using README.md for documentation.
@@ -34,7 +34,19 @@ Package.onUse(function (api) {
         'templates/default/components/quickForm/quickForm.html',
         'templates/default/components/quickForm/quickForm.js',
         'templates/default/inputTypes/boolean-checkbox/boolean-checkbox.html',
-        'templates/default/inputTypes/boolean-checkbox/boolean-checkbox.js'
+        'templates/default/inputTypes/boolean-checkbox/boolean-checkbox.js',
+
+        'templates/autoflow_bootstrap3_horizontal/components/afArrayField/afArrayField.html',
+        'templates/autoflow_bootstrap3_horizontal/components/afArrayField/afArrayField.js',
+        'templates/autoflow_bootstrap3_horizontal/components/afFormGroup/afFormGroup.html',
+        'templates/autoflow_bootstrap3_horizontal/components/afFormGroup/afFormGroup.js',
+        'templates/autoflow_bootstrap3_horizontal/components/afObjectField/afObjectField.html',
+        'templates/autoflow_bootstrap3_horizontal/components/afObjectField/afObjectField.js',
+        'templates/autoflow_bootstrap3_horizontal/components/quickForm/quickForm.html',
+        'templates/autoflow_bootstrap3_horizontal/components/quickForm/quickForm.js',
+        'templates/autoflow_bootstrap3_horizontal/inputTypes/boolean-checkbox/boolean-checkbox.html',
+        'templates/autoflow_bootstrap3_horizontal/inputTypes/boolean-checkbox/boolean-checkbox.js',
+        'templates/autoflow_bootstrap3_horizontal/autoflow_bootstrap3_horizontal.css'
     ], 'client');
 
     api.export(['AutoFlow'], ['server', 'client']);

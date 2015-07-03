@@ -27,6 +27,7 @@ var getCurrentFormSimpleSchema = function getCurrentFormSimpleSchema(currentForm
     if (currentFormDef.schemaFormat && currentFormDef.schemaFormat.toUpperCase() === 'JSONSCHEMA') {
         return new JSONSchema(expandSchemaMappings(currentFormDef.schema)).toSimpleSchema();
     } else {
+        //console.log('Stringified, currentFormDef.schema = ' + JSON.stringify(currentFormDef.schema));
         return new SimpleSchema(currentFormDef.schema);
     }
 };
@@ -97,7 +98,7 @@ Template.quickFlow.rendered = function renderQuickFormTemplateWithDataContext() 
 
     this.autorun(function() {
         currentFormName = AutoFlow.currentFormName.get();  // reactive, triggers autorun
-        autoFlowDef = getAutoFlowDef();
+        autoFlowDef = AutoFlow.flowDef.get() || getAutoFlowDef();  // AutoFlow.flowDef.get also reactive, triggers autorun
         currentFormDef = getCurrentFormDef(autoFlowDef, currentFormName);
         quickFormDataContext = mapCurrentContextAndSchemaFieldsToQuickFormContext(currentFormDef);
         //console.log('quickFormDataContext.type = ' + quickFormDataContext.type);

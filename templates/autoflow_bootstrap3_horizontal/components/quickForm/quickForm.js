@@ -33,7 +33,7 @@ var hideParamsGroups = function hideParamsGroups(totalHeight, containerHeight) {
     }
 };
 
-Template['quickForm_autoflow'].helpers({
+Template['quickForm_autoflow_bootstrap3_horizontal'].helpers({
     inputClass: function () {
         return this.atts["input-col-class"];
     },
@@ -84,7 +84,7 @@ Template['quickForm_autoflow'].helpers({
     }
 });
 
-Template['quickForm_autoflow'].events({
+Template['quickForm_autoflow_bootstrap3_horizontal'].events({
     'submit form': function(event, template) {
         event.preventDefault();
 

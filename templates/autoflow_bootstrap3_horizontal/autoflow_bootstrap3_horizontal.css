@@ -1,0 +1,24 @@
+.form-horizontal .autoform-padding-fix .form-group {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.checkbox input[type="checkbox"].autoform-checkbox-margin-fix,
+.checkbox-inline input[type="checkbox"].autoform-checkbox-margin-fix {
+    margin-left: 0;
+}
+
+.displayonly input.form-control {
+    border: none !important;
+    color: #555;
+    box-shadow: none;
+    padding-left: 0;
+    background-color: #fff;
+}
+
+.unit-label {
+    text-align: left;
+    padding-left: 0;
+    padding-top: 7px;
+}
+
