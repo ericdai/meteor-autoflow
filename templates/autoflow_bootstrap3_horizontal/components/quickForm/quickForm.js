@@ -26,8 +26,10 @@ var getTotalFormHeight = function getTotalFormHeight(schema) {
 var hideParamsGroups = function hideParamsGroups(totalHeight, containerHeight) {
     if (totalHeight > containerHeight) {
         var paramsGroup = paramsGroups.pop();
-        $(paramsGroup.groupId).hide();
-        hideParamsGroups(totalHeight - paramsGroup.height, containerHeight);
+        if (paramsGroup) {
+            $(paramsGroup.groupId).hide();
+            hideParamsGroups(totalHeight - paramsGroup.height, containerHeight);
+        }
     } else {
         return;
     }
@@ -97,7 +99,7 @@ Template['quickForm_autoflow_bootstrap3_horizontal'].events({
         if (typeOfValidation !== 'none' && typeOfValidation !== false) {
             var isValid = AutoForm.validateForm(formId);
             if (!isValid) {
-                console.log('Form with id="' + formId + '" failed AutoForm validation');
+                console.log('Form with name="' + formId + '" failed AutoForm validation');
                 return;
             }
         }
@@ -105,7 +107,7 @@ Template['quickForm_autoflow_bootstrap3_horizontal'].events({
         var nextForm = formSchema._schema.nextForm && formSchema._schema.nextForm.defaultValue || formSchema._schema.nextForm.value;
         if (nextForm) AutoFlow.currentFormName.set(nextForm);
 
-        var nextRoute = formSchema._schema.nextRoute && formSchema._schema.nextRoute.defaultValue || formSchema._schema.nextRoute.value;
+        var nextRoute = formSchema._schema.nextRoute && (formSchema._schema.nextRoute.defaultValue || formSchema._schema.nextRoute.value);
         if (nextRoute) Router.go(nextRoute);
     }
 });

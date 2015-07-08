@@ -1,12 +1,12 @@
 <template name="quickForm_autoflow_bootstrap3_horizontal">
     {{#autoForm qfAutoFormContext}}
-        {{autoCloseGroups}} <!-- DA added -->
+        {{autoCloseGroups}} {{! DA added }}
         {{> afQuickFields quickFieldsAtts}}
         {{#if qfShouldRenderButton}}
             <div class="form-group">
                 <div class="{{labelClass}}"></div>
                 <div class="{{inputClass}}">
-                    <button type="submit" {{submitButtonAtts}} id="autoflow-submit"><!-- DA added id -->
+                    <button type="submit" {{submitButtonAtts}} id="autoflow-submit">{{! DA added id }}
                         {{#with ../atts.buttonContent}}
                             {{this}}
                         {{else}}

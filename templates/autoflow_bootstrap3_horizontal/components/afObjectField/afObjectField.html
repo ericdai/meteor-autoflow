@@ -1,12 +1,31 @@
 <template name="afObjectField_autoflow_bootstrap3_horizontal">
-  <div class="form-group {{#if afFieldIsInvalid name=this.name}}has-error{{/if}}">
-    <label {{afFieldLabelAtts}}>{{afFieldLabelText name=this.name}}</label>
-    <div class="{{rightColumnClass}}">
-      <div class="panel panel-default autoform-padding-fix">
-        <div class="panel-body">
-          {{> afQuickFields quickFieldsAtts}}
-        </div>
-      </div>
-    </div>
-  </div>
+    <section id="{{formattedName}}-section" class="well">
+        <fieldset>
+
+            <legend>
+                {{this.name}}
+                <a href="#{{formattedName}}-params-group" class="expander-collapser" style="display: none"><b class="caret"></b></a>
+                <a href="#{{formattedName}}-params-group" class="expander-collapser"><b class="caret"></b></a>
+            </legend>
+
+            <div id="{{formattedName}}-params-group" {{hiddenAttr}}>
+                {{> afQuickFields quickFieldsAtts}}
+                {{#if qfShouldRenderButton}}
+                    <div class="form-group">
+                        <div class="{{labelClass}}"></div>
+                        <div class="{{inputClass}}">
+                            <button type="submit" {{submitButtonAtts}}>
+                                {{#with ../atts.buttonContent}}
+                                    {{this}}
+                                {{else}}
+                                    Submit
+                                {{/with}}
+                            </button>
+                        </div>
+                    </div>
+                {{/if}}
+            </div>
+
+        </fieldset>
+    </section>
 </template>

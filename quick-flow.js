@@ -1,7 +1,42 @@
 var currentDataContext,
     renderedView;
 
-var expandSchemaMappings = function expandSchemaMappings(schema) {
+var stringToFuncMap = {
+    'string': String,
+    'integer': Number,
+    'number': Number,
+    'boolean': Boolean,
+    'date': Date,
+    'object': Object,
+    'String': String,
+    'Integer': Number,
+    'Number': Number,
+    'Boolean': Boolean,
+    'Date': Date,
+    'Object': Object,
+    '[string]': [String],
+    '[integer]': [Number],
+    '[number]': [Number],
+    '[boolean]': [Boolean],
+    '[String]': [String],
+    '[Integer]': [Number],
+    '[Number]': [Number],
+    '[Boolean]': [Boolean]
+};
+
+var convertStringTypeToFuncType = function convertStringTypeToFuncType(stringVal) {
+    return stringToFuncMap[stringVal] || stringVal;  // don't validate here, let SimpleSchema validate
+};
+
+var convertToStandardSimpleSchema = function convertToStandardSimpleSchema(simpleSchemish) {
+    var simpleSchema = EJSON.clone(simpleSchemish);
+    _.each(simpleSchemish, function(fieldDef, fieldName) {
+        simpleSchema[fieldName].type = convertStringTypeToFuncType(fieldDef.type);
+    });
+    return simpleSchema;
+};
+
+var expandMapToProp = function expandMapToProp(schema) {
     var expandedSchema = {};
     lodash.forEach(schema['properties'], function(value, key) {
         if (value.properties.autoflow && value.properties.autoflow.mapTo) {
@@ -25,14 +60,14 @@ var expandSchemaMappings = function expandSchemaMappings(schema) {
 
 var getCurrentFormSimpleSchema = function getCurrentFormSimpleSchema(currentFormDef) {
     if (currentFormDef.schemaFormat && currentFormDef.schemaFormat.toUpperCase() === 'JSONSCHEMA') {
-        return new JSONSchema(expandSchemaMappings(currentFormDef.schema)).toSimpleSchema();
+        return new JSONSchema(expandMapToProp(currentFormDef.schema)).toSimpleSchema();
     } else {
         //console.log('Stringified, currentFormDef.schema = ' + JSON.stringify(currentFormDef.schema));
-        return new SimpleSchema(currentFormDef.schema);
+        return new SimpleSchema(convertToStandardSimpleSchema(currentFormDef.schema));
     }
 };
 
-var mapCurrentContextAndSchemaFieldsToQuickFormContext = function mapCurrentContextAndSchemaFieldsToQuickFormContext(currentFormDef) {
+var createQuickFormDataContext = function createQuickFormDataContext(currentFormDef) {
     var templateDataContext = {},
         resetOnSuccess = currentDataContext['reset-on-success'] || currentDataContext.resetOnSuccess,
         buttonContent = currentDataContext['button-content'] || currentDataContext.buttonContent,
@@ -59,7 +94,7 @@ var validateAutoFlowDef = function validateAutoFlowDef(autoFlowDef) {
     if (!autoFlowDef) throw new Meteor.Error('autoflow-def-not-found', 'No value provided for "auto-flow-def" or "autoFlowDef"');
 };
 
-var getAutoFlowDef = function getAutoFlowDef() {
+var getAutoFlowDefFromTemplateContext = function getAutoFlowDefFromTemplateContext() {
     var autoFlowDef = currentDataContext['auto-flow-def'] || currentDataContext.autoFlowDef;
     validateAutoFlowDef(autoFlowDef);
     return autoFlowDef;
@@ -98,9 +133,9 @@ Template.quickFlow.rendered = function renderQuickFormTemplateWithDataContext() 
 
     this.autorun(function() {
         currentFormName = AutoFlow.currentFormName.get();  // reactive, triggers autorun
-        autoFlowDef = AutoFlow.flowDef.get() || getAutoFlowDef();  // AutoFlow.flowDef.get also reactive, triggers autorun
+        autoFlowDef = AutoFlow.flowDef.get() || getAutoFlowDefFromTemplateContext();  // AutoFlow.flowDef.get also reactive, triggers autorun
         currentFormDef = getCurrentFormDef(autoFlowDef, currentFormName);
-        quickFormDataContext = mapCurrentContextAndSchemaFieldsToQuickFormContext(currentFormDef);
+        quickFormDataContext = createQuickFormDataContext(currentFormDef);
         //console.log('quickFormDataContext.type = ' + quickFormDataContext.type);
         //console.log('quickFormDataContext.meteormethod = ' + quickFormDataContext.meteormethod);
         //console.log('Stringified, quickformDataContext = ' + JSON.stringify(quickFormDataContext, null, 4));

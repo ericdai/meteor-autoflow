@@ -14,12 +14,13 @@ Package.onUse(function (api) {
     api.use('check', ['client', 'server']);
     api.use('templating', 'client');
     api.use('reactive-var', ['client', 'server']);
-    api.use('stevezhu:lodash@3.9.3', ['server']);
+    api.use('underscore', ['client', 'server']);
+    api.use('stevezhu:lodash@3.9.3', ['client', 'server']);
     //api.use('underscore', 'client');
     //api.use(['livedata', 'underscore', 'deps', 'templating', 'ui', 'blaze', 'ejson', 'reactive-var', 'reactive-dict', 'random'], 'client');
     api.use('aldeed:autoform@5.1.2');
     api.use('aldeed:simple-schema@1.3.3');
-    api.use('fullflavedave:json-schema@0.0.1');
+    api.use('fullflavedave:json-schema@0.0.2');
     api.addFiles('autoflow.js', ['client', 'server']);
     api.addFiles('quick-flow.html', ['client']);
     api.addFiles('quick-flow.js', ['client']);

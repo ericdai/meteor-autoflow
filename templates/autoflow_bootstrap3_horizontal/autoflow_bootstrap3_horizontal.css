@@ -8,12 +8,12 @@
     margin-left: 0;
 }
 
-.displayonly input.form-control {
+.display-only {
     border: none !important;
     color: #555;
     box-shadow: none;
     padding-left: 0;
-    background-color: #fff;
+    background-color: inherit;
 }
 
 .unit-label {
