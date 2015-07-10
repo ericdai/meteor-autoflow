@@ -63,8 +63,6 @@ if (Meteor.isServer) {
                 updatedFields = buildUpdatedFields(settings.$set, updateMetaData),
                 updatedDoc = lodash.merge(originalDoc, updatedFields);
 
-            //console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
-
             collection.upsert(updateMetaData.collectionId, updatedDoc, { multi: false }, function (error, result) {
                 if (error) {
                     console.log("There was an error upserting collection " + updateMetaData.collectionName + ' with collection _id of ' + updateMetaData.collectionId);

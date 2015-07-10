@@ -1,7 +1,7 @@
 Package.describe({
     name: 'fullflavedave:autoflow',
-    version: '0.0.2',
-    summary: 'Extends simple schema and autoform to produce multiple form page flows from json',
+    version: '0.0.3',
+    summary: 'Produce multi-page forms and page flows entirely from JSON',
     git: '',
     // By default, Meteor will default to using README.md for documentation.
     // To avoid submitting documentation, set this field to null.
@@ -18,9 +18,9 @@ Package.onUse(function (api) {
     api.use('stevezhu:lodash@3.9.3', ['client', 'server']);
     //api.use('underscore', 'client');
     //api.use(['livedata', 'underscore', 'deps', 'templating', 'ui', 'blaze', 'ejson', 'reactive-var', 'reactive-dict', 'random'], 'client');
-    api.use('aldeed:autoform@5.1.2');
+    api.use('aldeed:autoform@5.3.2');
     api.use('aldeed:simple-schema@1.3.3');
-    api.use('fullflavedave:json-schema@0.0.2');
+    api.use('bshamblen:json-simple-schema@0.0.8');
     api.addFiles('autoflow.js', ['client', 'server']);
     api.addFiles('quick-flow.html', ['client']);
     api.addFiles('quick-flow.js', ['client']);

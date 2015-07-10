@@ -33,7 +33,6 @@ var getSourceFieldVal = function getSourceFieldVal(sourceField, fieldSchema) {
     if (selectionDepProperty) {
         sourceSchema = AutoForm.getSchemaForField(sourceField);
         sourceFieldVal = formVal || sourceSchema.autoform.defaultValue;
-        //var sourceFieldVal = $("[name='" + sourceField + "']").val() || sourceSchema.autoform.defaultValue;
         if (sourceFieldVal) {
             var selectedOption = _.find(sourceSchema.autoform.options, function (option) {
                 return option.value === sourceFieldVal;
@@ -131,14 +130,6 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
             return "hidden"
         }
     }
-    // Added by DA
-    //mapsTo: function () {
-    //    var fieldSchema = AutoForm.getSchemaForField(this.name);
-    //    return fieldSchema.autoflow && fieldSchema.autoflow.mapsTo;
-    //},
-    //mapsToName: function () {
-    //    return this.name + '.mapsTo';
-    //}
 });
 
 // DA: Clear leftover values
@@ -149,9 +140,6 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].rendered = function () {
 // DA: added so that any dependent fields can react appropriately
 Template["afFormGroup_autoflow_bootstrap3_horizontal"].events({
     'change *': function (event, tmpl) {
-        //console.log('Something was changed, this = ' + JSON.stringify(this, null, 4));
-        //var name = $(event.target).attr('name');
-        //var value = $(event.target).val();
         reactiveFieldDict.set('autoflow.' + $(event.target).attr('name'), $(event.target).val());
     }
 });

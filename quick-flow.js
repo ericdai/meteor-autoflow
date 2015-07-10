@@ -36,33 +36,10 @@ var convertToStandardSimpleSchema = function convertToStandardSimpleSchema(simpl
     return simpleSchema;
 };
 
-var expandMapToProp = function expandMapToProp(schema) {
-    var expandedSchema = {};
-    lodash.forEach(schema['properties'], function(value, key) {
-        if (value.properties.autoflow && value.properties.autoflow.mapTo) {
-            expandedSchema[key.replace('.',':') + ':mapTo'] = {
-                "type": "object",
-                "properties": {
-                    type: String,
-                    defaultValue: value.properties.autoflow.mapTo,
-                    autoflow: {
-                        hidden: true
-                    }
-                }
-            };
-            delete value.properties.autoflow.mapTo;
-        }
-        expandedSchema[key] = value;
-    });
-
-    return expandedSchema;
-};
-
 var getCurrentFormSimpleSchema = function getCurrentFormSimpleSchema(currentFormDef) {
     if (currentFormDef.schemaFormat && currentFormDef.schemaFormat.toUpperCase() === 'JSONSCHEMA') {
-        return new JSONSchema(expandMapToProp(currentFormDef.schema)).toSimpleSchema();
+        return new JSONSchema(currentFormDef.schema).toSimpleSchema();
     } else {
-        //console.log('Stringified, currentFormDef.schema = ' + JSON.stringify(currentFormDef.schema));
         return new SimpleSchema(convertToStandardSimpleSchema(currentFormDef.schema));
     }
 };

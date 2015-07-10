@@ -17,11 +17,7 @@ Template["afObjectField_autoflow_bootstrap3_horizontal"].helpers({
         return labelAtts;
     },
     quickFieldsAtts: function () {
-        var atts = _.pick(this, 'name', 'id-prefix', 'input-col-class', 'label-class');  // DA added input-col-class, labal-class
-        //var atts = _.pick(this, 'name', 'id-prefix');
-        // We want to default to using bootstrap3 template below this point
-        // because we don't want horizontal within horizontal
-        //atts.template = 'bootstrap3';
+        var atts = _.pick(this, 'name', 'id-prefix', 'input-col-class', 'label-class');  // DA added input-col-class, label-class
         return atts;
     },
     formattedName: function () {
