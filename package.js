@@ -47,7 +47,9 @@ Package.onUse(function (api) {
         'templates/autoflow_bootstrap3_horizontal/components/quickForm/quickForm.js',
         'templates/autoflow_bootstrap3_horizontal/inputTypes/boolean-checkbox/boolean-checkbox.html',
         'templates/autoflow_bootstrap3_horizontal/inputTypes/boolean-checkbox/boolean-checkbox.js',
-        'templates/autoflow_bootstrap3_horizontal/autoflow_bootstrap3_horizontal.css'
+        'templates/autoflow_bootstrap3_horizontal/autoflow_bootstrap3_horizontal.css',
+
+        'formTypes/autoflow-method-update.js'
     ], 'client');
 
     api.export(['AutoFlow'], ['server', 'client']);

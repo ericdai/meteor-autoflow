@@ -103,7 +103,7 @@ Template['quickForm_autoflow'].events({
         }
 
         var nextForm = formSchema._schema.nextForm && formSchema._schema.nextForm.defaultValue || formSchema._schema.nextForm.value;
-        if (nextForm) AutoFlow.currentFormName.set(nextForm);
+        if (nextForm) AutoFlow.currentFormId.set(nextForm);
 
         var nextRoute = formSchema._schema.nextRoute && formSchema._schema.nextRoute.defaultValue || formSchema._schema.nextRoute.value;
         if (nextRoute) Router.go(nextRoute);

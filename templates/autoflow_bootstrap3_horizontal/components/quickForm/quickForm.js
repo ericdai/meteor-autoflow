@@ -86,28 +86,28 @@ Template['quickForm_autoflow_bootstrap3_horizontal'].helpers({
     }
 });
 
+var isValid = function isValid(typeOfValidation, formId) {
+    var isValid = true;
+    if (typeOfValidation !== 'none' && typeOfValidation !== false) {
+        isValid = AutoForm.validateForm(formId);
+        if (!isValid) console.log('Form with name="' + formId + '" failed AutoForm validation');
+    }
+    return isValid;
+};
+
 Template['quickForm_autoflow_bootstrap3_horizontal'].events({
     'submit form': function(event, template) {
+        var $autoFlowSubmit = template.find('#autoflow-submit'),
+            typeOfValidation = $autoFlowSubmit.getAttribute('validation'),
+            formId = $(event.target).closest('form').attr('id');
+
         event.preventDefault();
 
-        var formId = $(event.target).closest('form').attr('id');
-        var formSchema = AutoForm.getFormSchema(formId);
+        if (!isValid(typeOfValidation, formId)) return;
 
-        var $autoFlowSubmit = template.find('#autoflow-submit');
-        var typeOfValidation = $autoFlowSubmit.getAttribute('validation');
-
-        if (typeOfValidation !== 'none' && typeOfValidation !== false) {
-            var isValid = AutoForm.validateForm(formId);
-            if (!isValid) {
-                console.log('Form with name="' + formId + '" failed AutoForm validation');
-                return;
-            }
-        }
-
-        var nextForm = formSchema._schema.nextForm && formSchema._schema.nextForm.defaultValue || formSchema._schema.nextForm.value;
-        if (nextForm) AutoFlow.currentFormName.set(nextForm);
-
-        var nextRoute = formSchema._schema.nextRoute && (formSchema._schema.nextRoute.defaultValue || formSchema._schema.nextRoute.value);
-        if (nextRoute) Router.go(nextRoute);
+        var autoFlowFormDef = AutoFlow.getCurrentFormDef();
+        if (autoFlowFormDef.nextForm) AutoFlow.currentFormId.set(autoFlowFormDef.nextForm);
+        if (autoFlowFormDef.nextPage) window.location.href = autoFlowFormDef.nextPage;
+        if (typeof Router !== 'undefined' && autoFlowFormDef.nextRoute) Router.go(autoFlowFormDef.nextRoute);
     }
 });

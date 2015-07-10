@@ -76,7 +76,7 @@ var createQuickFormDataContext = function createQuickFormDataContext(currentForm
         autoCloseContainerId = templateDataContext['auto-close-container-id'] = currentDataContext['auto-close-container-id'] || currentDataContext.autoCloseContainerId;
 
     templateDataContext.schema = getCurrentFormSimpleSchema(currentFormDef);
-    templateDataContext.id = currentFormDef.name;
+    templateDataContext.id = currentFormDef.formId;
     if (currentDataContext.type) templateDataContext.type = currentDataContext.type;
     templateDataContext.meteormethod = currentDataContext['meteor-method'] || currentDataContext.meteormethod || currentDataContext.meteorMethod || AutoFlow.DEFAULT_UPSERT_METHOD;
     templateDataContext.template = currentDataContext.template || AutoFlow.DEFAULT_AUTOFORM_TEMPLATE;
@@ -95,50 +95,54 @@ var validateAutoFlowDef = function validateAutoFlowDef(autoFlowDef) {
 };
 
 var getAutoFlowDefFromTemplateContext = function getAutoFlowDefFromTemplateContext() {
-    var autoFlowDef = currentDataContext['auto-flow-def'] || currentDataContext.autoFlowDef;
-    validateAutoFlowDef(autoFlowDef);
-    return autoFlowDef;
+    return currentDataContext['auto-flow-def'] || currentDataContext.autoFlowDef;
 };
 
-var validateCurrentFormDef = function validateCurrentFormDef(currentFormDef, currentFormName) {
-    if (!currentFormDef) throw new Meteor.Error('form-def-not-found', 'Form definitions with name of "' + currentFormName + '" was not found in auto-flow-def.');
-    if (!currentFormDef.schema) throw new Meteor.Error('form-schema-not-found', 'Form schema for "' + currentFormName + '" was not found in auto-flow-def.');
+var validateCurrentFormDef = function validateCurrentFormDef(currentFormDef, currentFormId) {
+    if (!currentFormDef) throw new Meteor.Error('form-def-not-found', 'Form definitions with formId of "' + currentFormId + '" was not found in auto-flow-def.');
+    if (!currentFormDef.schema) throw new Meteor.Error('form-schema-not-found', 'Form schema for "' + currentFormId + '" was not found in auto-flow-def.');
 };
 
-// Return schema specified by currentFormName or the first form schema in autoFlow JSON definition
-var getCurrentFormDef = function getCurrentFormDef(autoFlowDef, currentFormName) {
-    var currentFormDef = null;
+var initializeCurrentFormId = function initializeCurrentFormName() {
+    var formId = AutoFlow.currentFormId.get();
 
-    if (!currentFormName) {
-        currentFormDef = autoFlowDef[0];
-    } else {
-        currentFormDef = _.find(autoFlowDef, function(singleDef) {
-            return singleDef.name === currentFormName;
-        });
+    if (!formId) {
+        formId = AutoFlow.flowDef.get()[0].formId;
+        AutoFlow.currentFormId.set(formId);
     }
+};
 
-    validateCurrentFormDef(currentFormDef, currentFormName);
+var initializeAutoFlowDef = function initializeAutoFlowDef() {
+    var autoFlowDef = AutoFlow.flowDef.get();
+    if (!autoFlowDef) {
+        autoFlowDef = getAutoFlowDefFromTemplateContext();
+        validateAutoFlowDef(autoFlowDef);
+        AutoFlow.flowDef.set(autoFlowDef);
+    }
+};
 
-    return currentFormDef;
+var initialize = function initialize() {
+    initializeAutoFlowDef();
+    initializeCurrentFormId();
 };
 
 Template.quickFlow.rendered = function renderQuickFormTemplateWithDataContext() {
     var autoFlowDef = null,
-        currentFormName = null,
+        currentFormId = null,
         currentFormDef = null,
         quickFormDataContext = null,
         parentNode = document.getElementById('quickFlow');
 
     currentDataContext = this.data; // this is template instance; could also use Template.currentData()
 
+    initialize();
+
     this.autorun(function() {
-        currentFormName = AutoFlow.currentFormName.get();  // reactive, triggers autorun
-        autoFlowDef = AutoFlow.flowDef.get() || getAutoFlowDefFromTemplateContext();  // AutoFlow.flowDef.get also reactive, triggers autorun
-        currentFormDef = getCurrentFormDef(autoFlowDef, currentFormName);
+        autoFlowDef = AutoFlow.flowDef.get();  // AutoFlow.flowDef.get also reactive, triggers autorun
+        currentFormId = AutoFlow.currentFormId.get();  // reactive, triggers autorun
+        currentFormDef = AutoFlow.getCurrentFormDef();
+        validateCurrentFormDef(currentFormDef, currentFormId);
         quickFormDataContext = createQuickFormDataContext(currentFormDef);
-        //console.log('quickFormDataContext.type = ' + quickFormDataContext.type);
-        //console.log('quickFormDataContext.meteormethod = ' + quickFormDataContext.meteormethod);
-        //console.log('Stringified, quickformDataContext = ' + JSON.stringify(quickFormDataContext, null, 4));
 
         if (renderedView) Blaze.remove(renderedView);
         renderedView = Blaze.renderWithData(Template.quickForm, quickFormDataContext, parentNode);

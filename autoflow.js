@@ -1,8 +1,15 @@
 AutoFlow = {
-    currentFormName: new ReactiveVar(null),
+    currentFormId: new ReactiveVar(null),
     flowDef: new ReactiveVar(null),
     DEFAULT_UPSERT_METHOD: 'autoFlowUpsert',
-    DEFAULT_AUTOFORM_TEMPLATE: 'autoflow'
+    DEFAULT_AUTOFORM_TEMPLATE: 'autoflow',
+    getCurrentFormDef: function() {
+        var self = this;
+        var form = lodash.find(self.flowDef.get(), function(form) {
+            return form.formId === self.currentFormId.get();
+        });
+        return form;
+    }
 };
 
 SimpleSchema.extendOptions({
@@ -20,65 +27,51 @@ SimpleSchema.extendOptions({
 });
 
 if (Meteor.isServer) {
-    var validateSettings = function validateSettings(settings) {
-        console.log('collectionName = ' + settings.$set.collectionName);
-        console.log('validate, Jobs = ' + GLOBAL.Jobs);
-        if (!settings.$set) throw new Meteor.Error('no-form-values', 'No $set in form values.');
-        if (!settings.$set.collectionName) throw new Meteor.Error('no-collection-name', 'Property "collectionName" was not specified in the form.');
-        if (!settings.$set.collectionId) throw new Meteor.Error('no-collection-id', 'Property "collectionId" was not specified in the form.');
-        if (!GLOBAL[settings.$set.collectionName]) throw new Meteor.Error('collection-not-found', 'Could not find collection named "' + collectionName + '".');
+    var buildUpdatedFields = function buildUpdatedFields(formSettings, updateMetaData) {
+        var updatedFields = {};
+
+        lodash.forEach(formSettings, function(formValue, fieldName) {
+            var targetField = updateMetaData.fieldMappings && updateMetaData.fieldMappings[fieldName];
+            if (targetField) {
+                lodash.set(updatedFields, targetField, formValue);
+            } else {
+                updatedFields[fieldName] = formValue;
+            }
+        });
+
+        return updatedFields
+    };
+
+    var validateMetaData = function validateMetaData(metaData) {
+        if (!metaData.collectionName) throw new Meteor.Error('no-collection-name', 'Property "collectionName" was not specified in the form metadata.');
+        if (!metaData.collectionId) throw new Meteor.Error('no-collection-id', 'Property "collectionId" was not specified in the form metadata.');
+        if (!GLOBAL[metaData.collectionName]) throw new Meteor.Error('collection-not-found', 'Could not find collection named "' + collectionName + '".');
         try {
-            GLOBAL[settings.$set.collectionName].findOne();
+            GLOBAL[metaData.collectionName].findOne();
         } catch (e) {
             throw new Meteor.Error('cannot-access-collection', 'Could not access collection named "' + collectionName + '".', e.toString());
         }
     };
 
     Meteor.methods({
-        autoFlowUpsert: function(settings) {
-            console.log('Starting Meteor.method autoFlowUpsert');
-            var collectionName,
-                collectionId,
-                collection,
-                document,
-                filteredCollection = {};
+        autoFlowUpsert: function(settings, updateMetaData) {
+            //console.log('Starting Meteor.method autoFlowUpsert, collectionInfo = ' + JSON.stringify(updateMetaData, null, 4));
+            validateMetaData(updateMetaData);
 
-            //if (!Meteor.user()) throw new Meteor.Error('not-logged-in', 'You must be logged in to call this method');
+            var collection = GLOBAL[updateMetaData.collectionName],
+                originalDoc = collection.findOne({_id: updateMetaData.collectionId}) || {},
+                updatedFields = buildUpdatedFields(settings.$set, updateMetaData),
+                updatedDoc = lodash.merge(originalDoc, updatedFields);
 
-            console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
-            validateSettings(settings);
+            //console.log('autoFlowUpsert(), settings = ' + JSON.stringify(settings, null, 4));
 
-            collectionName = settings.$set.collectionName;
-            collectionId = settings.$set.collectionId;
-            collection = GLOBAL[collectionName];
-            document = collection.findOne({_id: collectionId});
-
-            document = document || {};
-            //console.log('collection = ' + JSON.stringify(collection, null, 4));
-
-
-            lodash.forEach(settings.$set, function(value, key) {
-                if (!lodash.includes(['collectionName', 'collectionId', 'nextForm', 'nextRoute'], key) && key.indexOf(':') === -1) {
-                    var mapping = settings.$set[key.replace('.', ':') + ':mapTo'];
-                    if (mapping) {
-                        lodash.set(filteredCollection, mapping, value);
-                    } else {
-                        filteredCollection[key] = value;
-                    }
-                }
-            });
-
-            //console.log('Stringified, filteredCollection = ' + JSON.stringify(filteredCollection, null, 4));
-
-            var document = lodash.merge(document, filteredCollection);
-
-            collection.upsert(collectionId, document, { multi: false }, function (error, result) {
+            collection.upsert(updateMetaData.collectionId, updatedDoc, { multi: false }, function (error, result) {
                 if (error) {
-                    console.log("There was an error upserting collection " + collectionName + ' with collection _id of ' + collectionId);
-                    console.log('error: ' + error);
+                    console.log("There was an error upserting collection " + updateMetaData.collectionName + ' with collection _id of ' + updateMetaData.collectionId);
+                    console.log('Error: ' + error);
                 } else {
                     successResult = result;
-                    console.log('Successfully updated collection ' + collectionName + ' with collection _id of ' + collectionId + ' for this many records: ' + successResult);
+                    console.log('Successfully updated collection ' + updateMetaData.collectionName + ' with collection _id of ' + updateMetaData.collectionId + ' for this many records: ' + successResult);
                 }
             });
         }

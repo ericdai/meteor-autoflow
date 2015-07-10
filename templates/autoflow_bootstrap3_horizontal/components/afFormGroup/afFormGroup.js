@@ -130,15 +130,15 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
         if (fieldSchema.autoflow && fieldSchema.autoflow.hidden) {
             return "hidden"
         }
-    },
-    // Added by DA
-    mapsTo: function () {
-        var fieldSchema = AutoForm.getSchemaForField(this.name);
-        return fieldSchema.autoflow && fieldSchema.autoflow.mapsTo;
-    },
-    mapsToName: function () {
-        return this.name + '.mapsTo';
     }
+    // Added by DA
+    //mapsTo: function () {
+    //    var fieldSchema = AutoForm.getSchemaForField(this.name);
+    //    return fieldSchema.autoflow && fieldSchema.autoflow.mapsTo;
+    //},
+    //mapsToName: function () {
+    //    return this.name + '.mapsTo';
+    //}
 });
 
 // DA: Clear leftover values
