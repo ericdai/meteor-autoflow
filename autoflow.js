@@ -20,7 +20,7 @@ SimpleSchema.extendOptions({
         selectionDep: Match.Optional(String),
         selectionProp: Match.Optional(String),
         hidden: Match.Optional(Boolean),
-        formulaDep: Match.Optional(String),
+        formula: Match.Optional(String),
         closed: Match.Optional(Boolean),
         mapTo: Match.Optional(String)
     }))

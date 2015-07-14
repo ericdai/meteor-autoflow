@@ -24,9 +24,11 @@ var reactiveFieldDict = {
     }
 };
 
+// TODO: this won't work for all possible ways options can be defined with AutoForm
+// TODO: generalize this for any kind of input, and not just selects/drop downs
 var getSourceFieldVal = function getSourceFieldVal(sourceField, fieldSchema) {
     var formVal = reactiveFieldDict.get('autoflow.' + sourceField),
-        selectionDepProperty = fieldSchema.autoflow.selectionDepProperty,
+        selectionDepProperty = fieldSchema.autoflow.selectionDepProperty || 'value',
         sourceSchema = null,
         sourceFieldVal = null;
 
@@ -92,9 +94,7 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
 
         // Set values that are dependent on other field values
         if (autoflow.selectionDep) atts.value = getSourceFieldVal(autoflow.selectionDep, fieldSchema);
-        if (autoflow.formulaDep) atts.value = getFormulaVal(autoflow.formulaDep, AutoForm.getFormSchema()._schema);
-
-        //console.log('Stringified, atts = ' + JSON.stringify(atts, null, 4));
+        if (autoflow.formula) atts.value = getFormulaVal(autoflow.formula, AutoForm.getFormSchema()._schema);
         /** End autoflow section added by DA **/
 
         return atts;
@@ -117,10 +117,7 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
     },
     // Added by DA
     autoFlowFieldAtts: function () {
-        //console.log('********* ' + this.name);
         var fieldSchema = AutoForm.getSchemaForField(this.name);
-        //console.log('Stringified, AutoForm.getSchemaForField() = ' + this.name + ', ' + JSON.stringify(fieldSchema, null, 4));
-        //console.log('Stringified, this = ' + JSON.stringify(this, null, 4));
         return fieldSchema.autoflow;
     },
     // Added by DA
