@@ -26,17 +26,6 @@ Package.onUse(function (api) {
     api.addFiles('quick-flow.js', ['client']);
 
     api.addFiles([
-        'templates/default/components/afArrayField/afArrayField.html',
-        'templates/default/components/afArrayField/afArrayField.js',
-        'templates/default/components/afFormGroup/afFormGroup.html',
-        'templates/default/components/afFormGroup/afFormGroup.js',
-        'templates/default/components/afObjectField/afObjectField.html',
-        'templates/default/components/afObjectField/afObjectField.js',
-        'templates/default/components/quickForm/quickForm.html',
-        'templates/default/components/quickForm/quickForm.js',
-        'templates/default/inputTypes/boolean-checkbox/boolean-checkbox.html',
-        'templates/default/inputTypes/boolean-checkbox/boolean-checkbox.js',
-
         'templates/autoflow_bootstrap3_horizontal/components/afArrayField/afArrayField.html',
         'templates/autoflow_bootstrap3_horizontal/components/afArrayField/afArrayField.js',
         'templates/autoflow_bootstrap3_horizontal/components/afFormGroup/afFormGroup.html',
