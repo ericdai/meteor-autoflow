@@ -19,7 +19,6 @@ SimpleSchema.extendOptions({
         units: Match.Optional(String),
         selectionDep: Match.Optional(String),
         selectionProp: Match.Optional(String),
-        hidden: Match.Optional(Boolean),
         formula: Match.Optional(String),
         closed: Match.Optional(Boolean),
         mapTo: Match.Optional(String)

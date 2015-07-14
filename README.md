@@ -104,7 +104,6 @@ JSON definition (from within Template helper):
 - `autoflow.formulaDep` (change name) -- string, basic math formula.  String interpolation performed on tokens containing field names within brackets (e.g. `[]`)
 - `autoflow.closed` -- boolean, limited to objects types (fieldsets), initial display of fieldset will be closed/collapsed
 - `autoflow.mapTo` -- string, the property of `collectionName` that should be updated with this value.  Use dot notation. 
-- `autoflow.hidden` -- boolean, make field a hidden field (redundant, use autoform omit instead??)
 
 *From AutoForm*
 

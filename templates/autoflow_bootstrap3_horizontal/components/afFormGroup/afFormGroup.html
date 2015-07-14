@@ -1,5 +1,5 @@
 <template name="afFormGroup_autoflow_bootstrap3_horizontal">
-    <div class="form-group {{#if afFieldIsInvalid name=this.name}}has-error{{/if}}" data-required={{required}} {{hiddenAttr}}> {{! DA added hiddenAttr }}
+    <div class="form-group {{#if afFieldIsInvalid name=this.name}}has-error{{/if}}" data-required={{required}}>
         {{#if skipLabel}}
         {{! We include the empty label as the easiest way to keep proper field alignment}}
             <label {{afFieldLabelAtts}}></label>

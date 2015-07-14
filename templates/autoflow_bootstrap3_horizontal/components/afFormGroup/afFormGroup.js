@@ -119,13 +119,6 @@ Template["afFormGroup_autoflow_bootstrap3_horizontal"].helpers({
     autoFlowFieldAtts: function () {
         var fieldSchema = AutoForm.getSchemaForField(this.name);
         return fieldSchema.autoflow;
-    },
-    // Added by DA
-    hiddenAttr: function () {
-        var fieldSchema = AutoForm.getSchemaForField(this.name);
-        if (fieldSchema.autoflow && fieldSchema.autoflow.hidden) {
-            return "hidden"
-        }
     }
 });
 
