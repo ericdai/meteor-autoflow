@@ -7,7 +7,7 @@ This package is currently in a "Proof of Concept" state.  It contains many serio
 ## Demo
 Check out the [AutoFlow demo](http://autoflow-demo.meteor.com/) to see the package in action and play with different flow definitions.
 
-## Form Functionality
+## Form functionality
 Since this package uses AutoForm, the forms generated include most of the goodness of the AutoForm package, including form generation and form validation.  In addition, AutoFlow adds these capabilities (with JSON alone):
 
 - create multiple forms and link them (upon form submission)
@@ -20,7 +20,7 @@ Since this package uses AutoForm, the forms generated include most of the goodne
 - add units/post-text after inputs
 - display various properties (not just `value`) of select options
 
-## Quick Start
+## Quick start
 Only two steps are necessary to create a series of forms/pages:
 
 - Include the quickFlow template in your template code (`{{< quickFlow}}`)
@@ -30,11 +30,11 @@ Basic template code using defaults:
 
     {{> quickFlow autoFlowDef=flowDef }}
 
-Full template code overriding defaults:
+Alternatively, full template code overriding defaults:
 
     {{> quickFlow autoFlowDef=flowDef id="basicForm" type="autoflow-method-update" meteormethod="autoFlowUpsert" template="autoflow_bootstrap3_horizontal" label-class="col-sm-3" input-col-class="col-sm-6" }}
     
-JSON definition (from within Template helper): 
+Basic JSON definition (from within Template helper): 
 
     Template.myTemplate.helpers({
         flowDef: [
@@ -93,7 +93,7 @@ JSON definition (from within Template helper):
 - `schema` -- JSON object, the form definition, in SimpleSchema" or JSONSchema format
 
 
-#### AutoFlow field members/properties
+#### AutoFlow field input group members/properties
 *From AutoFlow*
 
 - `autoflow.readOnly` -- boolean, make input element read only by adding `readonly` attribute
@@ -107,206 +107,202 @@ JSON definition (from within Template helper):
 
 *From AutoForm*
 
-- `autoform.type` -- manual control of input type
+- `autoform.type` -- string, manually set input type
 - `autoform.rows` -- number, number of rows for type `textarea`
-- `autoform.class` -- class for field (input?)
-- `autoform.omit` -- field not included in html form
+- `autoform.class` -- string, class for field (input?)
+- `autoform.omit` -- boolean, don't include field in html form
 
 *From SimpleSchema*
 
 - `type` -- string, value can be `String`, `Number`, `Boolean`, `Object`, `[String]`, `[Number]`, `[Boolean]`, `[Object]` 
-- `label`
-- `defaultValue`
-- `optional`
-- `min` and `max`
-- `exclusiveMin` and `exclusiveMax`
+- `label` -- string, the label for the field input
+- `defaultValue` -- any value
+- `optional` -- boolean
+- `min` and `max` -- number
+- `exclusiveMin` and `exclusiveMax` -- number
 - `decimal` -- boolean, `true` indicates non-integers are allowed, `false` indicates they are not allowed .  Default is `false`.
 - `minCount` and `maxCount` -- number, for arrays
 - `allowedValues` -- array of allowed values
-- `regEx`
+- `regEx` --
 - `blackbox` -- boolean, skip validation of entire contents of fieldset
 - `trim` -- boolean, default is `true`
 - `autoValue` -- function
 - `custom` -- function
 
 
-## Example of Complex AutoFlow form definition
+## Example of complex AutoFlow form definition
 
     Template.myTemplate.helpers({
         flowDef:[
             {
-                formId: "form1",
-                schemaFormat: "SimpleSchema",
-                "nextForm": "form2",
-                "nextRoute": "fracsim",
-                "collectionName": "Jobs",
-                "collectionId": "JobID1",
-                schema: {
-                    "Status_HydraulicFractureSimulation": {
-                        "type": "String",
-                        "defaultValue": "submitted",
-                        "autoflow": {
-                            "mapTo": "Status.HydraulicFractureSimulation",
-                            "hidden": true
-                        }
+                "Status_HydraulicFractureSimulation": {
+                    "type": "String",
+                    "defaultValue": "submitted",
+                    "autoflow": {
+                        "mapTo": "Status.HydraulicFractureSimulation"
                     },
-                    "Status_ProppantTransportSimulation": {
-                        "type": "String",
-                        "defaultValue": "submitted",
-                        "autoflow": {
-                            "mapTo": "Status.ProppantTransportSimulation",
-                            "hidden": true
-                        }
+                    "autoform": {
+                        "type": "hidden"
+                    }
+                },
+                "Status_ProppantTransportSimulation": {
+                    "type": "String",
+                    "defaultValue": "submitted",
+                    "autoflow": {
+                        "mapTo": "Status.ProppantTransportSimulation",
                     },
-                    "demoMode": {
-                        "type": "String",
-                        defaultValue: 1,
-                        "autoflow": {
-                            "hidden": true
-                        }
+                    "autoform": {
+                        "type": "hidden"
+                    }
+                },
+                "demoMode": {
+                    "type": "String",
+                    defaultValue: 1,
+                    "autoform": {
+                        "type": "hidden"
+                    }
+                },
+                "Hydraulic Fracture": {
+                    "type": "Object"
+                },
+                "Hydraulic Fracture.injectionRate": {
+                    "type": "String",
+                    "label": "Injection Rate",
+                    "defaultValue": "40",
+                    "autoflow": {
+                        "mapTo": "Simulations.FluidSimulation.BoundaryConditions.FlowRate",
+                        "units": "kg/s"
+                    }
+                },
+                "Hydraulic Fracture.fluidType": {
+                    "type": "String",
+                    "label": "Fluid Type",
+                    "autoform": {
+                        "defaultValue": "Water",
+                        "options": [
+                            {
+                                "label": "Water",
+                                "value": "Water",
+                                "density": "1000 kg m^{-3}",
+                                "viscosity": "0.001 Pa s"
+                            },
+                            {
+                                "label": "Slick Stuff",
+                                "value": "Slick Stuff",
+                                "density": "20",
+                                "viscosity": "30"
+                            }
+                        ]
                     },
-                    "Hydraulic Fracture": {
-                        "type": "Object"
+                    "autoflow": {
+                        "mapTo": "Simulations.FluidSimulation.Materials.FluidType"
+                    }
+                },
+                "Hydraulic Fracture.density": {
+                    "type": "String",
+                    "label": "Density",
+                    "optional": true,
+                    "autoflow": {
+                        "displayOnly": true,
+                        "selectionDep": "Hydraulic Fracture.fluidType",
+                        "selectionDepProperty": "density"
+                    }
+                },
+                "Hydraulic Fracture.viscosity": {
+                    "type": "String",
+                    "label": "Viscosity",
+                    "optional": true,
+                    "autoflow": {
+                        "displayOnly": true,
+                        "selectionDep": "Hydraulic Fracture.fluidType",
+                        "selectionDepProperty": "viscosity"
+                    }
+                },
+                "Proppant": {
+                    "type": "Object"
+                },
+                "Proppant.injectionTime": {
+                    "type": "String",
+                    "label": "Injection Time",
+                    "defaultValue": "600",
+                    "autoflow": {
+                        "mapTo": "Simulations.ProppantTransportSimulation.InjectionTime",
+                        "units": "s"
+                    }
+                },
+                "Proppant.injectionRate": {
+                    "type": "String",
+                    "label": "Injection Rate",
+                    "defaultValue": "17",
+                    "autoflow": {
+                        "mapTo": "Simulations.ProppantTransportSimulation.InjectionRate",
+                        "units": "kg/s"
+                    }
+                },
+                "Proppant.amount": {
+                    "type": "String",
+                    "label": "Amount",
+                    "optional": true,
+                    "autoflow": {
+                        "displayOnly": true,
+                        "formula": "[Proppant.injectionTime] * [Proppant.injectionRate]",
+                        "units": "kg"
+                    }
+                },
+                "Proppant.proppantType": {
+                    "type": "String",
+                    "label": "Proppant Type",
+                    "autoform": {
+                        "defaultValue": "Melior60",
+                        "options": [
+                            {
+                                "label": "WhiteSand100",
+                                "value": "WhiteSand100",
+                                "density": "2650 kg m^{-3}",
+                                "diameter": "0.00015 m"
+                            },
+                            {
+                                "label": "Kryptosphere25",
+                                "value": "Kryptosphere25",
+                                "density": "3900 kg m^{-3}",
+                                "diameter": "0.00078 m"
+                            },
+                            {
+                                "label": "WhiteSand30",
+                                "value": "WhiteSand30",
+                                "density": "2650 kg m^{-3}",
+                                "diameter": "0.000595 m"
+                            },
+                            {
+                                "label": "Melior60",
+                                "value": "Melior60",
+                                "density": "1980 kg m^{-3}",
+                                "diameter": "0.00025 m"
+                            }
+                        ]
                     },
-                    "Hydraulic Fracture.injectionRate": {
-                        "type": "String",
-                        "label": "Injection Rate",
-                        "defaultValue": "40",
-                        "autoflow": {
-                            "mapTo": "Simulations.FluidSimulation.BoundaryConditions.FlowRate",
-                            "units": "kg/s"
-                        }
-                    },
-                    "Hydraulic Fracture.fluidType": {
-                        "type": "String",
-                        "label": "Fluid Type",
-                        "autoform": {
-                            "defaultValue": "Water",
-                            "options": [
-                                {
-                                    "label": "Water",
-                                    "value": "Water",
-                                    "density": "1000 kg m^{-3}",
-                                    "viscosity": "0.001 Pa s"
-                                },
-                                {
-                                    "label": "Slick Stuff",
-                                    "value": "Slick Stuff",
-                                    "density": "20",
-                                    "viscosity": "30"
-                                }
-                            ]
-                        },
-                        "autoflow": {
-                            "mapTo": "Simulations.FluidSimulation.Materials.FluidType"
-                        }
-                    },
-                    "Hydraulic Fracture.density": {
-                        "type": "String",
-                        "label": "Density",
-                        "optional": true,
-                        "autoflow": {
-                            "displayOnly": true,
-                            "selectionDep": "Hydraulic Fracture.fluidType",
-                            "selectionDepProperty": "density"
-                        }
-                    },
-                    "Hydraulic Fracture.viscosity": {
-                        "type": "String",
-                        "label": "Viscosity",
-                        "optional": true,
-                        "autoflow": {
-                            "displayOnly": true,
-                            "selectionDep": "Hydraulic Fracture.fluidType",
-                            "selectionDepProperty": "viscosity"
-                        }
-                    },
-                    "Proppant": {
-                        "type": "Object"
-                    },
-                    "Proppant.injectionTime": {
-                        "type": "String",
-                        "label": "Injection Time",
-                        "defaultValue": "600",
-                        "autoflow": {
-                            "mapTo": "Simulations.ProppantTransportSimulation.InjectionTime",
-                            "units": "s"
-                        }
-                    },
-                    "Proppant.injectionRate": {
-                        "type": "String",
-                        "label": "Injection Rate",
-                        "defaultValue": "17",
-                        "autoflow": {
-                            "mapTo": "Simulations.ProppantTransportSimulation.InjectionRate",
-                            "units": "kg/s"
-                        }
-                    },
-                    "Proppant.amount": {
-                        "type": "String",
-                        "label": "Amount",
-                        "optional": true,
-                        "autoflow": {
-                            "displayOnly": true,
-                            "formula": "[Proppant.injectionTime] * [Proppant.injectionRate]",
-                            "units": "kg"
-                        }
-                    },
-                    "Proppant.proppantType": {
-                        "type": "String",
-                        "label": "Proppant Type",
-                        "autoform": {
-                            "defaultValue": "Melior60",
-                            "options": [
-                                {
-                                    "label": "WhiteSand100",
-                                    "value": "WhiteSand100",
-                                    "density": "2650 kg m^{-3}",
-                                    "diameter": "0.00015 m"
-                                },
-                                {
-                                    "label": "Kryptosphere25",
-                                    "value": "Kryptosphere25",
-                                    "density": "3900 kg m^{-3}",
-                                    "diameter": "0.00078 m"
-                                },
-                                {
-                                    "label": "WhiteSand30",
-                                    "value": "WhiteSand30",
-                                    "density": "2650 kg m^{-3}",
-                                    "diameter": "0.000595 m"
-                                },
-                                {
-                                    "label": "Melior60",
-                                    "value": "Melior60",
-                                    "density": "1980 kg m^{-3}",
-                                    "diameter": "0.00025 m"
-                                }
-                            ]
-                        },
-                        "autoflow": {
-                            "mapTo": "Simulations.ProppantTransportSimulation.Materials.ProppantType"
-                        }
-                    },
-                    "Proppant.density": {
-                        "type": "String",
-                        "label": "Density",
-                        "optional": true,
-                        "autoflow": {
-                            "displayOnly": true,
-                            "selectionDep": "Proppant.proppantType",
-                            "selectionDepProperty": "density"
-                        }
-                    },
-                    "Proppant.diameter": {
-                        "type": "String",
-                        "label": "Diameter",
-                        "optional": true,
-                        "autoflow": {
-                            "displayOnly": true,
-                            "selectionDep": "Proppant.proppantType",
-                            "selectionDepProperty": "diameter"
-                        }
+                    "autoflow": {
+                        "mapTo": "Simulations.ProppantTransportSimulation.Materials.ProppantType"
+                    }
+                },
+                "Proppant.density": {
+                    "type": "String",
+                    "label": "Density",
+                    "optional": true,
+                    "autoflow": {
+                        "displayOnly": true,
+                        "selectionDep": "Proppant.proppantType",
+                        "selectionDepProperty": "density"
+                    }
+                },
+                "Proppant.diameter": {
+                    "type": "String",
+                    "label": "Diameter",
+                    "optional": true,
+                    "autoflow": {
+                        "displayOnly": true,
+                        "selectionDep": "Proppant.proppantType",
+                        "selectionDepProperty": "diameter"
                     }
                 }
             },
@@ -320,6 +316,6 @@ JSON definition (from within Template helper):
         ]
 
 
-## Customizing Form Templates
+## Customizing form templates
 Currently, the default set of templates are the "autoflow_bootstrap3_horizontal" template
 
