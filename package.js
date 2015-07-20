@@ -1,6 +1,6 @@
 Package.describe({
     name: 'fullflavedave:autoflow',
-    version: '0.0.7',
+    version: '0.0.8',
     summary: 'Produce multi-page forms and page flows entirely from JSON',
     git: '',
     // By default, Meteor will default to using README.md for documentation.
