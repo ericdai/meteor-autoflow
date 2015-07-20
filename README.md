@@ -33,6 +33,8 @@ Basic template code using defaults:
 Alternatively, full template code overriding defaults:
 
     {{> quickFlow autoFlowDef=flowDef id="basicForm" type="autoflow-method-update" meteormethod="autoFlowUpsert" template="autoflow_bootstrap3_horizontal" label-class="col-sm-3" input-col-class="col-sm-6" }}
+
+The flow and forms created with the `quickFlow` template respond reactively to `autoFlowDef` and all other parameters passed into it (parameters are obtained through `Template.currentData()`)    
     
 Basic JSON definition (from within Template helper): 
 
