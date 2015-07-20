@@ -67,6 +67,20 @@ var createQuickFormDataContext = function createQuickFormDataContext(currentForm
     return templateDataContext;
 };
 
+var validateCurrentFormDef = function validateCurrentFormDef(currentFormDef, currentFormId) {
+    if (!currentFormDef) throw new Meteor.Error('form-def-not-found', 'Form definitions with formId of "' + currentFormId + '" was not found in auto-flow-def.');
+    if (!currentFormDef.schema) throw new Meteor.Error('form-schema-not-found', 'Form schema for "' + currentFormId + '" was not found in auto-flow-def.');
+};
+
+var initializeCurrentFormId = function initializeCurrentFormName() {
+    var formId = AutoFlow.currentFormId.get();
+    if (!formId) {
+        formId = AutoFlow.flowDef[0].formId;
+        AutoFlow.currentFormId.set(formId);
+    }
+};
+
+// TODO:  add to this, maybe move to AutoFlow.flowDef.set()
 var validateAutoFlowDef = function validateAutoFlowDef(autoFlowDef) {
     if (!autoFlowDef) throw new Meteor.Error('autoflow-def-not-found', 'No value provided for "auto-flow-def" or "autoFlowDef"');
 };
@@ -75,26 +89,11 @@ var getAutoFlowDefFromTemplateContext = function getAutoFlowDefFromTemplateConte
     return currentDataContext['auto-flow-def'] || currentDataContext.autoFlowDef;
 };
 
-var validateCurrentFormDef = function validateCurrentFormDef(currentFormDef, currentFormId) {
-    if (!currentFormDef) throw new Meteor.Error('form-def-not-found', 'Form definitions with formId of "' + currentFormId + '" was not found in auto-flow-def.');
-    if (!currentFormDef.schema) throw new Meteor.Error('form-schema-not-found', 'Form schema for "' + currentFormId + '" was not found in auto-flow-def.');
-};
-
-var initializeCurrentFormId = function initializeCurrentFormName() {
-    var formId = AutoFlow.currentFormId.get();
-
-    if (!formId) {
-        formId = AutoFlow.flowDef.get()[0].formId;
-        AutoFlow.currentFormId.set(formId);
-    }
-};
-
 var initializeAutoFlowDef = function initializeAutoFlowDef() {
-    var autoFlowDef = AutoFlow.flowDef.get();
-    if (!autoFlowDef) {
-        autoFlowDef = getAutoFlowDefFromTemplateContext();
+    var autoFlowDef = getAutoFlowDefFromTemplateContext();
+    if (autoFlowDef) {
         validateAutoFlowDef(autoFlowDef);
-        AutoFlow.flowDef.set(autoFlowDef);
+        AutoFlow.flowDef = autoFlowDef;
     }
 };
 
@@ -103,20 +102,17 @@ var initialize = function initialize() {
     initializeCurrentFormId();
 };
 
+// TODO:  make autorun just fire once on start
 Template.quickFlow.rendered = function renderQuickFormTemplateWithDataContext() {
-    var autoFlowDef = null,
-        currentFormId = null,
+    var currentFormId = null,
         currentFormDef = null,
         quickFormDataContext = null,
         parentNode = document.getElementById('quickFlow');
 
-    currentDataContext = this.data; // this is template instance; could also use Template.currentData()
-
-    initialize();
-
     this.autorun(function() {
-        autoFlowDef = AutoFlow.flowDef.get();  // AutoFlow.flowDef.get also reactive, triggers autorun
-        currentFormId = AutoFlow.currentFormId.get();  // reactive, triggers autorun
+        currentDataContext = Template.currentData(); // this is reactive, which is necessary for reacting to params (but  this.data is not reactive)
+        initialize(); // also reactive  TODO:  try reduce reactivity in this autorun block by making initialize non-reactive
+        currentFormId = AutoFlow.currentFormId.get();  // reactive, triggers autorun if new currentFormId set
         currentFormDef = AutoFlow.getCurrentFormDef();
         validateCurrentFormDef(currentFormDef, currentFormId);
         quickFormDataContext = createQuickFormDataContext(currentFormDef);

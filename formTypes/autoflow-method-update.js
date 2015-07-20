@@ -5,21 +5,47 @@ var buildFieldMappings = function buildFieldMappings() {
     lodash.forEach(autoFlowFormDef.schema, function(fieldProps, fieldName) {
         if (fieldProps.autoflow && fieldProps.autoflow.mapTo) fieldMappings[fieldName] = fieldProps.autoflow.mapTo;
     });
-
     return fieldMappings;
 };
 
 var buildUpdateMetaData = function buildUpdateMetaData() {
-    var autoFlowFormDef = AutoFlow.getCurrentFormDef();
-
-    var metaData = {
-        collectionName: autoFlowFormDef.collectionName,
-        collectionId: autoFlowFormDef.collectionId
-    };
-
-    metaData.fieldMappings = buildFieldMappings();
-
+    var autoFlowFormDef = AutoFlow.getCurrentFormDef(),
+        metaData =  {
+            collectionName: autoFlowFormDef.collectionName,
+            collectionId: autoFlowFormDef.collectionId,
+            fieldMappings: buildFieldMappings()
+        };
     return metaData;
+};
+
+var filterAndGetKeys = function filterAndGetKeys(obj, func) {
+    var keys = [];
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (func(obj[key], key)) keys.push(key);
+        }
+    }
+    return keys;
+};
+
+var getNoSubmitFieldNames = function getNoSubmitFieldNames() {
+    var autoFlowFormDef = AutoFlow.getCurrentFormDef(),
+        noSubmitFieldNames = noSubmitFieldNames = filterAndGetKeys(autoFlowFormDef.schema, function(fieldProps) {
+            return (fieldProps.autoflow && fieldProps.autoflow.noSubmit) ? true : false;
+        });
+
+    return noSubmitFieldNames;
+};
+
+var removeNoSubmitFields = function removeNoSubmitFields(updateDoc) {
+    var noSubmitFieldNames = getNoSubmitFieldNames(),
+        newUpdateDoc = EJSON.clone(updateDoc);
+
+    noSubmitFieldNames.forEach(function(fieldName) {
+        delete newUpdateDoc['$set'][fieldName];
+    });
+
+    return newUpdateDoc;
 };
 
 AutoForm.addFormType('autoflow-method-update', {
@@ -30,9 +56,7 @@ AutoForm.addFormType('autoflow-method-update', {
         // Prevent browser form submission
         this.event.preventDefault();
 
-        if (!this.formAttributes.meteormethod) {
-            throw new Error('When form type is "autoflow-method-update", you must also provide a "meteormethod" attribute');
-        }
+        if (!this.formAttributes.meteormethod) throw new Error('When form type is "autoflow-method-update", you must also provide a "meteormethod" attribute');
 
         // Run "before.method" hooks
         this.runBeforeHooks(this.updateDoc, function (updateDoc) {
@@ -47,6 +71,7 @@ AutoForm.addFormType('autoflow-method-update', {
             if (valid === false) {
                 c.failedValidation();
             } else {
+                updateDoc = removeNoSubmitFields(updateDoc);
                 updateMetaData = buildUpdateMetaData();
                 Meteor.call(c.formAttributes.meteormethod, updateDoc, updateMetaData, c.result);
             }

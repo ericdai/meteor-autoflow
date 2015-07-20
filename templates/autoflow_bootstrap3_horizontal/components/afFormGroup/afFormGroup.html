@@ -7,7 +7,6 @@
             <label {{afFieldLabelAtts}}>{{#if this.labelText}}{{this.labelText}}{{else}}{{afFieldLabelText name=this.name}}{{/if}}</label>
         {{/if}}
 
-        {{! DA added conditional for displayOnly }}
         {{#if autoFlowFieldAtts.displayOnly}}
             <div class="{{rightColumnClass}}">
                 <div class="form-control display-only">
@@ -15,12 +14,10 @@
                 </div>
             </div>
         {{else}}
-            <div class="{{rightColumnClass}}{{#if autoFlowFieldAtts.readOnly}} readonly{{/if}}{{#if autoFlowFieldAtts.displayOnly}} displayonly{{/if}}">
-                {{! DA added readonly part }}
+            <div class="{{rightColumnClass}}{{#if autoFlowFieldAtts.readOnly}} readonly{{/if}}">
                 {{> afFieldInput afFieldInputAtts}}
                 <span class="help-block">{{{afFieldMessage name=this.name}}}</span>
             </div>
-            {{! DA added units }}
             {{#if autoFlowFieldAtts.units}}
                 <div class="col-sm-3 unit-label">{{autoFlowFieldAtts.units}}</div>
             {{/if}}

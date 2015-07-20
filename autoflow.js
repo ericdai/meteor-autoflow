@@ -1,11 +1,11 @@
 AutoFlow = {
     currentFormId: new ReactiveVar(null),
-    flowDef: new ReactiveVar(null),
+    flowDef: null,
     DEFAULT_UPSERT_METHOD: 'autoFlowUpsert',
     DEFAULT_AUTOFORM_TEMPLATE: 'autoflow',
     getCurrentFormDef: function() {
         var self = this;
-        var form = lodash.find(self.flowDef.get(), function(form) {
+        var form = lodash.find(self.flowDef, function(form) {
             return form.formId === self.currentFormId.get();
         });
         return form;
@@ -16,6 +16,7 @@ SimpleSchema.extendOptions({
     autoflow: Match.Optional(Match.ObjectIncluding({
         readOnly: Match.Optional(Boolean),
         displayOnly: Match.Optional(Boolean),
+        noSubmit: Match.Optional(Boolean),
         units: Match.Optional(String),
         selectionDep: Match.Optional(String),
         selectionProp: Match.Optional(String),

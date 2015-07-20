@@ -98,6 +98,7 @@ Basic JSON definition (from within Template helper):
 
 - `autoflow.readOnly` -- boolean, make input element read only by adding `readonly` attribute
 - `autoflow.displayOnly` -- boolean, create a display element
+- `autoflow.noSubmit` -- boolean, display input, but do not submit its value to the server.  Useful during development, when backend not ready.
 - `autoflow.units` -- string, add units to input element
 - `autoflow.selectionDep` (change name) -- string, name of another field 
 - `autoflow.selectionDepProperty` (change name) -- string, a property of the field specified by `selectionDep`
